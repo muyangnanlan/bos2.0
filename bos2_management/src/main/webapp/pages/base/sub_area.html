@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>管理分区</title>
+		<!-- 导入jquery核心类库 -->
+		<script type="text/javascript" src="../../js/jquery-1.8.3.js"></script>
+		<!-- 导入ocuploadjs文件 -->
+		<script type="text/javascript" src="../../js/ocupload/jquery.ocupload-1.1.2.js"></script>
+		<!-- 导入easyui类库 -->
+		<link rel="stylesheet" type="text/css" href="../../js/easyui/themes/default/easyui.css">
+		<link rel="stylesheet" type="text/css" href="../../js/easyui/themes/icon.css">
+		<link rel="stylesheet" type="text/css" href="../../js/easyui/ext/portal.css">
+		<link rel="stylesheet" type="text/css" href="../../css/default.css">
+		<script type="text/javascript" src="../../js/easyui/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../../js/easyui/ext/jquery.portal.js"></script>
+		<script type="text/javascript" src="../../js/easyui/ext/jquery.cookie.js"></script>
+		<script src="../../js/easyui/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			
+			// 自定义方法：将表格数据转化成json数据
+			$.fn.serializeJson=function(){  
+	            var serializeObj={};  
+	            var array=this.serializeArray();  
+	            var str=this.serialize();  
+	            $(array).each(function(){  
+	                if(serializeObj[this.name]){  
+	                    if($.isArray(serializeObj[this.name])){  
+	                        serializeObj[this.name].push(this.value);  
+	                    }else{  
+	                        serializeObj[this.name]=[serializeObj[this.name],this.value];
+	                    }  
+	                }else{  
+	                    serializeObj[this.name]=this.value;   
+	                }  
+	            });  
+	            return serializeObj;  
+	        }; 
+			function doAdd(){
+				$('#addWindow').window("open");
+			}
+			
+			function doEdit(){
+				// 获得表格中选中的行对象
+				var rows = $("#grid").datagrid("getSelections");
+				if (rows.length == 1) {
+					// 弹出窗口
+					$("#addWindow").window("open");
+					// 获得选中的行数据
+					var row = rows[0];
+					// 将数据回显到表单中
+					$("#sub_areaForm").form("load", row);
+					// 将下来菜单的数据回显
+					$("#areaId").combobox('setValue', row.area.id);  
+				} else {
+					$.messager.alert("信息", "请选择一行进行修改", "warning");
+				}
+			}
+			
+			function doDelete(){
+				alert("删除...");
+			}
+			
+			function doSearch(){
+				$('#searchWindow').window("open");
+			}
+			
+			function doExport(){
+				alert("导出");
+			}
+			
+			
+			
+			//工具栏
+			var toolbar = [ {
+				id : 'button-search',	
+				text : '查询',
+				iconCls : 'icon-search',
+				handler : doSearch
+			}, {
+				id : 'button-add',
+				text : '增加',
+				iconCls : 'icon-add',
+				handler : doAdd
+			}, {
+				id : 'button-edit',	
+				text : '修改',
+				iconCls : 'icon-edit',
+				handler : doEdit
+			},{
+				id : 'button-delete',
+				text : '删除',
+				iconCls : 'icon-cancel',
+				handler : doDelete
+			},{
+				id : 'button-import',
+				text : '导入',
+				iconCls : 'icon-redo',
+			},{
+				id : 'button-export',
+				text : '导出',
+				iconCls : 'icon-undo',
+				handler : doExport
+			}];
+			// 定义列
+			var columns = [ [ {
+				field : 'id',
+				checkbox : true,
+			}, {
+				field : 'showid',
+				title : '分拣编号',
+				width : 120,
+				align : 'center',
+				formatter : function(data,row ,index){
+					return row.id;
+				}
+			},{
+				field : 'area.province',
+				title : '省',
+				width : 120,
+				align : 'center',
+				formatter : function(data,row ,index){
+					if(row.area != null ){
+						return row.area.province;
+					}
+					return "" ;
+				}
+			}, {
+				field : 'area.city',
+				title : '市',
+				width : 120,
+				align : 'center',
+				formatter : function(data,row ,index){
+					if(row.area != null ){
+						return row.area.city;
+					}
+					return "" ;
+				}
+			}, {
+				field : 'area.district',
+				title : '区',
+				width : 120,
+				align : 'center',
+				formatter : function(data,row ,index){
+					if(row.area != null ){
+						return row.area.district;
+					}
+					return "" ;
+				}
+			}, {
+				field : 'keyWords',
+				title : '关键字',
+				width : 120,
+				align : 'center'
+			}, {
+				field : 'startNum',
+				title : '起始号',
+				width : 100,
+				align : 'center'
+			}, {
+				field : 'endNum',
+				title : '终止号',
+				width : 100,
+				align : 'center'
+			} , {
+				field : 'single',
+				title : '单双号',
+				width : 100,
+				align : 'center',
+				formatter : function(data,row ,index){
+					if(row.single == 0 ){
+						return "单双号";
+					} else if(row.single == 1) {
+						return "单号";
+					} else if(row.single == 2) {
+						return "双号";
+					}
+					return "" ;
+				}
+			} , {
+				field : 'assistKeyWords',
+				title : '辅助关键字',
+				width : 100,
+				align : 'center'
+			} ] ];
+			
+			$(function(){
+				// 先将body隐藏，再显示，不会出现页面刷新效果
+				$("body").css({visibility:"visible"});
+				
+				// 分区管理数据表格
+				$('#grid').datagrid( {
+					iconCls : 'icon-forward',
+					fit : true,
+					border : true,
+					rownumbers : true,
+					striped : true,
+					pageList: [30,50,100],
+					pagination : true,
+					toolbar : toolbar,
+					url : "../../subArea_pageFind",
+					idField : 'id',
+					columns : columns,
+					onDblClickRow : doDblClickRow
+				});
+				
+				// 添加、修改分区
+				$('#addWindow').window({
+			        title: '添加修改分区',
+			        width: 600,
+			        modal: true,
+			        shadow: true,
+			        closed: true,
+			        height: 400,
+			        resizable:false
+			    });
+				
+				// 查询分区
+				$('#searchWindow').window({
+			        title: '查询分区',
+			        width: 400,
+			        modal: true,
+			        shadow: true,
+			        closed: true,
+			        height: 400,
+			        resizable:false
+			    });
+				
+				// 保存分区
+				$("#save").click(function(){
+					// 判断表单是否填写正确
+					if ($("#sub_areaForm").form('validate')) {
+						$("#sub_areaForm").submit();
+					} else {
+						$.messager.alert("警告", "您没有正确填写，请检查重新填写后提交", "warning");
+					}
+				});
+				
+				// 查询
+				$("#btn").click(function(){
+					// 获得表格中的数据
+					var params = $("#searchForm").serializeJson();
+					// 将json数据绑定到grid中
+					$("#grid").datagrid("load", params);
+					// 关闭查询窗口
+					$("#searchWindow").window("close");
+				});
+				
+				// 导入
+				$("#button-import").upload({
+					// 文件选择后的提交路径
+					action : "../../fileImport",
+					// 文件被选择时
+					onSelect : function() {
+						// 自动提交关闭
+						this.autoSubmit = false;
+						// 规定文件类型
+						var regex = /^.*\.(xls|xlsx)$/;
+						// 获得文件名
+						var fileName = this.filename();
+						if (regex.test(fileName)) {
+							// 文件类型正确，提交
+							this.submit();
+						} else {
+							$.messager.alert("警告", "请选择excel文件（后缀名为.xls或者.xlsx）", "warning");
+						}
+					},
+					onComplete : function(data) {
+							alert(data);
+					}
+				});
+			});
+		
+			function doDblClickRow(){
+				alert("双击表格数据...");
+			}
+			
+			var province;
+			// 选中省，获得市
+			function selectProvince(data) {
+				//alert(data.province);
+				province = data.province;
+				// 将获得的数据添加到市的标签中
+				$("#cityId").combobox('reload', "../../area_findCities?province="+province); 
+			}
+			var city
+			// 选中市，获得区
+			function selectCity(data) {
+				city = data.city;
+				// 通过异步加载数据，将数据添加到区县的下拉菜单中
+				$("#districtId").combobox('reload', "../../area_findDistricts?province="+province+"&city="+city); 
+			}
+			
+			// 根据省市区查找area
+			function selectDistrict(data) {
+				// 通过异步加载获得area
+				$.post("../../area_findOne", {province:province,city:city,district:data.district}, function(d){
+					//alert(d.id);
+					$("#aId").val(d.id);
+				},"json");
+			}
+		</script>
+	</head>
+
+	<body class="easyui-layout" style="visibility:hidden;">
+		<div region="center" border="false">
+			<table id="grid"></table>
+		</div>
+		<!-- 添加 修改分区 -->
+		<div class="easyui-window" title="分区添加修改" id="addWindow" collapsible="false" minimizable="false" maximizable="false" style="top:20px;left:200px">
+			<div style="height:31px;overflow:hidden;" split="false" border="false">
+				<div class="datagrid-toolbar">
+					<a id="save" icon="icon-save" href="#" class="easyui-linkbutton" plain="true">保存</a>
+				</div>
+			</div>
+
+			<div style="overflow:auto;padding:5px;" border="false">
+				<form id="sub_areaForm" action="../../save_subArea" method="post">
+					<table class="table-edit" width="80%" align="center">
+						<tr class="title">
+							<td colspan="2">分区信息</td>
+						</tr>
+						<tr>
+							<td>分拣编码</td>
+							<td>
+								<input type="text" name="id" class="easyui-validatebox" required="true" />
+							</td>
+						</tr>
+						<tr>
+							<td>选择区域</td>
+							<td>
+								<!-- 三级联动：选择省  -->
+								<input id="areaId" class="easyui-combobox"
+									data-options="width:110, valueField:'province',textField:'province',
+									value:'--请选择省份--', url:'../../area_findProvinces.action',
+									onSelect:selectProvince
+									" />
+								<!-- 三级联动：选择市 -->
+								<input id="cityId" class="easyui-combobox" 
+									data-options="width:110, valueField:'city',textField:'city',
+									value:'--请选择市--',
+									onSelect:selectCity
+									" />
+								<!-- 三级联动： 选择区县 -->
+								<input id="districtId" class="easyui-combobox"
+									data-options="width:120, valueField:'district',textField:'district',
+									value:'--请选择区（县）--',
+									onSelect:selectDistrict
+									" />
+								<input id="aId" type="hidden" name="area.id" >	
+							</td>
+						</tr>
+						<!--<tr>
+							<td>选择定区</td>
+							<td>
+								<input class="easyui-combobox" name="fixedArea.id" data-options="valueField:'id',textField:'name',url:'../../data/fixedArea.json'" />
+							</td>
+						</tr>-->
+						<tr>
+							<td>关键字</td>
+							<td>
+								<input type="text" name="keyWords" class="easyui-validatebox" required="true" />
+							</td>
+						</tr>
+						<tr>
+							<td>起始号</td>
+							<td>
+								<input type="text" name="startNum" class="easyui-validatebox" required="true" />
+							</td>
+						</tr>
+						<tr>
+							<td>终止号</td>
+							<td>
+								<input type="text" name="endNum" class="easyui-validatebox" required="true" />
+							</td>
+						</tr>
+						<tr>
+							<td>单双号</td>
+							<td>
+								<select class="easyui-combobox" name="single" style="width:150px;">
+									<option value="0">单双号</option>
+									<option value="1">单号</option>
+									<option value="2">双号</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>辅助关键字</td>
+							<td>
+								<input type="text" name="assistKeyWords" class="easyui-validatebox" required="true" style="width:250px;" />
+							</td>
+						</tr>
+					</table>
+				</form>
+			</div>
+		</div>
+		<!-- 查询分区 -->
+		<div class="easyui-window" title="查询分区窗口" id="searchWindow" collapsible="false" minimizable="false" maximizable="false" style="top:20px;left:200px">
+			<div style="overflow:auto;padding:5px;" border="false">
+				<form id="searchForm">
+					<table class="table-edit" width="80%" align="center">
+						<tr class="title">
+							<td colspan="2">查询条件</td>
+						</tr>
+						<tr>
+							<td>省</td>
+							<td>
+								<input type="text" name="area.province" class="easyui-validatebox"/>
+							</td>
+						</tr>
+						<tr>
+							<td>市</td>
+							<td>
+								<input type="text" name="area.city" class="easyui-validatebox"/>
+							</td>
+						</tr>
+						<tr>
+							<td>区（县）</td>
+							<td>
+								<input type="text" name="area.district" class="easyui-validatebox" />
+							</td>
+						</tr>
+						<!--<tr>
+							<td>定区编码</td>
+							<td>
+								<input type="text" name="fixedArea.id" class="easyui-validatebox" required="true" />
+							</td>
+						</tr>-->
+						<tr>
+							<td>关键字</td>
+							<td>
+								<input type="text" name="keyWords" class="easyui-validatebox"/>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2"><a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a> </td>
+						</tr>
+					</table>
+				</form>
+			</div>
+		</div>
+	</body>
+
+</html>

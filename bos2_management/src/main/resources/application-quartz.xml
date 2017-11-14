@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd ">
+ 	
+ 	<context:component-scan base-package="com.itheima.sesrvice" />
+ 	
+ 	<!-- job -->
+ 	<bean id="promotionJob" 
+ 		class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+ 		<property name="jobClass" value="com.itheima.job.PromotionJob" />
+ 	</bean>
+ 	
+ 	<!-- trigger -->
+ 	<bean id="simpleTrigger" 
+ 		class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+ 		<property name="jobDetail" ref="promotionJob" />
+ 		<!-- 项目启动后0秒后第一次执行 -->
+ 		<property name="startDelay" value="0" />
+ 		<!-- 60（1分钟）秒后重复执行 -->
+ 		<property name="repeatInterval" value="60000" />
+ 	</bean>
+ 	
+ 	<!-- scheduler  -->
+ 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+ 		<!-- 注入创建jobDetail的工厂 -->
+ 		<property name="jobFactory" ref="jobFactory"/>
+ 		<property name="triggers">
+ 			<list>
+ 				<ref bean="simpleTrigger"/>
+ 			</list>
+ 		</property>
+ 	</bean>
+ 	
+</beans>

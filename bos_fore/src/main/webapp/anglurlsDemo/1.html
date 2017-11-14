@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>angularjs双向数据绑定</title>
+		<!-- 引入anglurjs核心类库 -->
+		<script type="text/javascript" src="../js/angular.min.js"></script>
+	</head>
+	<!-- ng-app市angularjs程序的入口 -->
+	<body ng-app>
+		<div>
+			<!-- ng-model是模型 -->
+			<input type="text" name="name" ng-model="name">
+		</div>
+		<div>
+			<!-- ng-bind进行取值（视图）也可以用{{}} -->
+			hello,{{name}}
+		</div>
+		<div>
+			<!-- ng-model模型作用  -->
+			<input type="text" name="name" ng-model="email" />
+		</div>
+		<div>
+			<!-- {{}} 等价于 ng-bind 用于数据显示 -->
+			Hello, {{email}}
+		</div>
+	</body>
+</html>
+

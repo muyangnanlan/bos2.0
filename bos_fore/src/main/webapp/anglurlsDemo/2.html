@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>mvc及事件</title>
+		<!-- 引入anglurjs核心类库 -->
+		<script type="text/javascript" src="../js/angular.min.js"></script>
+	</head>
+	<body >
+		<!-- ng-app="myapp" 定义了一个名叫myapp的模块 -->
+		<div ng-app="myapp" ng-controller="mycontroll">
+			<div>
+				<!-- ng-model是模型 -->
+				<input type="text" name="name" ng-model="name" ng-blur="getValue()">
+				<input type="button" value="清空数据" ng-click="clearValue()">
+			</div>
+			<div>
+				<!-- ng-bind进行取值（视图）也可以用{{}} -->
+				hello,{{name}},/<span ng-bind="name"></span>
+			</div>
+		</div>	
+		<script type="text/javascript">
+			// 初始化myapp模块
+			var myapp = angular.module("myapp",[]);
+			
+			// 定义模块的控制器
+			// 依赖注入  $scope作用域对象，操作当前作用于视图
+			myapp.controller("mycontroll", ["$scope", function($scope){
+				$scope.name="黑马程序员";
+				// 点击清空数据事件
+				$scope.clearValue = function() {
+					$scope.name = "";
+				}
+				// 鼠标离开获得数据
+				$scope.getValue = function() {
+					alert($scope.name);
+					console.log($scope.name);
+				}
+			}]);
+		</script>
+	</body>
+</html>
+

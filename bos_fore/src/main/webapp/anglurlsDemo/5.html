@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>分页</title>
+		<!-- 引入jquery-->
+		<script type="text/javascript" src="../js/jquery.js"></script>
+		<!-- 引入bootStrap的js -->
+		<script type="text/javascript" src="../js/bootstrap.min.js"></script>
+		<link  rel="stylesheet" type="text/css" href="../css/bootstrap/bootstrap.css"/>
+		<!-- 引入anglurjs核心类库 -->
+		<script type="text/javascript" src="../js/angular.min.js"></script>
+	</head>	
+	<body ng-app="productApp" ng-controller="productController">	
+		<table  class="table table-bordered">
+			<tr>
+				<th>序号</th>
+				<th>商品id</th>
+				<th>商品名称</th>
+				<th>商品价格</th>
+			</tr>
+			<tr ng-repeat="product in products">
+				<td>{{$index + 1}}</td>
+				<td>{{product.id}}</td>
+				<td>{{product.name}}</td>
+				<td>{{product.price}}</td>
+			</tr>
+		</table>
+		<div>
+			<ul class="pagination pull-right">
+				<li>
+					<a href ng-click="proPage()">上一页</a>
+				</li>
+				<li ng-repeat = "page in pageList" ng-class = "{active : isActivePage(page)}">
+					<a href ng-click="selectPage(page)">{{page}}</a>
+				</li>
+				<li>
+					<a href ng-click="nextPage()">下一页</a>
+				</li>
+			</ul>
+		</div>
+		<script type="text/javascript">
+			// 模块化productApp
+			var productApp = angular.module("productApp", []);
+			// 初始化控制器
+			productApp.controller("productController",["$scope", "$http", 
+				function($scope, $http){
+				// 当前页
+				$scope.currentPage = 1;
+				// 每页显示条数
+				$scope.pageSize = 3;
+				// 总记录数
+				$scope.totalItems = 0;
+				// 总页数
+				$scope.totalPage = 0;
+				// 显示每页的页码
+				$scope.pageList = new Array();
+				
+				$scope.selectPage = function(page){
+					// 发出http请求
+					$http({
+						method : "get",
+						url : "5_1.json",
+						params : {
+							page : page,
+							pageSize : $scope.pageSize
+						}
+					}).success(function(data, status, headers, config){
+						
+						// 总记录数
+						$scope.totalItems = data.totalItems;
+						
+						// 总页数
+						$scope.totalPage = Math.ceil($scope.totalItems / $scope.pageSize);
+						
+						// 当前页
+						$scope.currentPage = page;
+						
+						// 显示表格数据
+						$scope.products = data.products;
+						
+						// 起始数
+						var begin;
+						// 结尾数
+						var end;
+						
+						// 当前页面的开始数为 当前页面-5
+						var begin = $scope.currentPage -5;
+						if (begin < 1) {
+							begin = 1;
+						}
+						
+						// 当前页面的结束数为begin+9
+						var end = begin + 9;
+						if (end > $scope.totalPage) {
+							end = $scope.totalPage;
+						}
+						
+						// 修正页面（防止，页面后几页出现不足10页）
+						begin = end - 9;
+						if (begin < 1) {
+							begin = 1;//如果出现这种情况，应该是页面一共都不足10页
+						}
+						
+						// 将页码添加到集合中
+						for(var i = begin; i <= end; i++) {
+							$scope.pageList.push(i);
+						}
+						
+						
+						console.log(data);
+					}).error(function(data, status, headers, config) {
+						// 当响应以错误状态返回时调用
+						alert("出错，请联系管理员 ");
+					});
+					
+				}
+				
+				$scope.proPage = function() {
+					$scope.selectPage($scope.currentPage - 1);
+				}
+				
+				$scope.nextPage = function() {
+					$scope.selectPage($scope.currentPage + 1);
+				}
+				
+				$scope.isActivePage = function(page) {
+					return page === $scope.currentPage;
+				}
+				
+				$scope.selectPage(1);
+				
+			}]);	
+		</script>
+	</body>
+	
+</html>
+

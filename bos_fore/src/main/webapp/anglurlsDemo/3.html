@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>集合数据遍历显示</title>
+		<!-- 引入anglurjs核心类库 -->
+		<script type="text/javascript" src="../js/angular.min.js"></script>
+	</head>
+	<body ng-app="myapp" ng-controller="myControll">
+		<table width="89%" border="1px">
+			<tr>
+				<td>序号</td>
+				<td>商品id</td>
+				<td>商品名称</td>
+				<td>商品价格</td>
+			</tr>
+			<tr ng-repeat="product in prouducts">
+				<td>{{$index+1}}</td>
+				<td>{{product.id}}</td>
+				<td>{{product.name}}</td>
+				<td>{{product.price}}</td>
+			</tr>
+		</table>
+		<script type="text/javascript">
+			// 初始化myapp模块
+			var myapp = angular.module("myapp",[]);
+			// 初始化控制层,依赖注入作用域$scope
+			myapp.controller("myControll", ["$scope", "$http", function($scope, $http){
+				// 给循环模型赋值
+				/*$scope.prouducts = [
+					{
+						id : 001, 
+						name : "电冰箱", 
+						price : 6000
+					},{
+						id : 002,
+						name : "电视机",
+						price : 7000
+					}
+				];*/
+				$http({
+					method : "get",
+					url : "product.json"
+				}).success(function(data){
+					// 给循环模型赋值
+					$scope.prouducts = data;
+					console.log(data);
+				});
+			}]);
+		</script>
+	</body>
+</html>
+

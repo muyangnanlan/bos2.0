@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<!-- 引入jqery核心类库 -->
+		<script type="text/javascript" src="../js/jquery-1.8.3.js"></script>
+		<!-- 引入easyui的核心类库 -->
+		<script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+		<!-- 引入默认主题 -->
+		<link rel="stylesheet" type="text/css" href="../js/easyui/themes/default/easyui.css" />
+		<!-- 引入国际化 -->
+		<script type="text/javascript" src="../js/easyui/locale/easyui-lang-zh_CN.js"></script>
+		<!-- 引入图标 -->
+		<link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css" />
+		<script type="text/javascript">
+			$(function(){
+				// 定义全局变量索引
+				var currentIndex;
+				$("#grid").datagrid({
+					singleSelect : true,//只允许选择一行
+					url : "product.json",
+					columns : [[
+						{
+							field : "id",
+							title : "编号",
+							width : 100,
+							editor : {
+								type : "validatebox",
+								options : {
+									required: true
+								}
+							},
+							
+						},
+						{
+							field : "name",
+							title : "姓名",
+							width : 150,
+							editor : {
+								type : "validatebox",
+								options : {
+									required: true
+								}
+							}
+						},
+						{
+							field : "price",
+							title : "价格",
+							width : 150,
+							editor : {
+								type : "validatebox",
+								options : {
+									required: true
+								}
+							}
+						}
+					]],
+					toolbar: [
+						{	
+							id : "add",
+							text : "新增一行",
+							iconCls: 'icon-add',  		
+							handler: function(){
+								/*
+								 * 如果当前编辑的行的索引有值，说明有正在编辑的行，
+								 * 	不能再添加空行
+								 */
+								if (currentIndex != undefined) {
+									// 正在编辑
+									return;
+								}
+								$('#grid').datagrid('insertRow',{
+									index : 0,//再首行添加
+									row : {}//说明新添加的为空行
+								});
+								
+								// 开启编辑状态
+								$("#grid").datagrid('beginEdit', 0);
+								currentIndex = 0;
+							}
+						},
+						{	
+							id : "edit",
+							text : "编辑",
+							iconCls: 'icon-edit',  		
+							handler: function(){
+								/*
+								 * 如果当前编辑的行的索引有值，说明有正在编辑的行，
+								 * 	不能再编辑其他的行
+								 */
+								if (currentIndex != undefined) {
+									return;
+								}
+								// 获得要编辑的这一行
+								var row = $('#grid').datagrid("getSelected");
+								// 获得选中这一行的id
+								var index = $("#grid").datagrid('getRowIndex', row);
+								// 开启编辑
+								$("#grid").datagrid('beginEdit', index);
+								// 将索引赋值给全局变量index
+								currentIndex = index;
+							}
+						},{	
+							id : "save",
+							text : "保存",
+							iconCls: 'icon-save',  		
+							handler: function(){
+								// 保存所编辑的行
+								$("#grid").datagrid('endEdit', currentIndex);
+							}
+						},{	
+							id : "cancel",
+							text : "取消",
+							iconCls: 'icon-cancel',  		
+							handler: function(){
+								// 取消这一行，数据回归到修改之前
+								$("#grid").datagrid('cancelEdit', currentIndex);
+							}
+						},
+					]
+				});
+				
+				// 再结束编辑之后触发的事件
+				$("#grid").datagrid({
+					onAfterEdit : function(rowIndex, rowData, changes) {
+						// 将当前编辑的行值为未定义
+						currentIndex = undefined;
+					}
+				});
+				
+				// 再取消编辑之后触发的事件
+				$("#grid").datagrid({
+					onCancelEdit : function(rowIndex, rowData, changes) {
+						// 将当前编辑的行值为未定义
+						currentIndex = undefined;
+					}
+				});
+				
+				// 当双击这一行
+				$("#grid").datagrid({
+					onDblClickRow : function(rowIndex, rowData){
+						if(currentIndex != undefined) {
+							return;
+						}
+						// 开启编辑
+						$("#grid").datagrid('beginEdit', rowIndex);
+						// 将索引赋值给全局变量index
+						currentIndex = rowIndex;
+					}
+				});
+			});
+		</script>
+	</head>
+	<body >
+		<table id="grid"></table>
+	</body>
+
+</html>

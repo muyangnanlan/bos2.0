@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<!-- 引入jqery核心类库 -->
+		<script type="text/javascript" src="../js/jquery-1.8.3.js"></script>
+		<!-- 引入easyui的核心类库 -->
+		<script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+		<!-- 引入默认主题 -->
+		<link rel="stylesheet" type="text/css" href="../js/easyui/themes/default/easyui.css" />
+		<!-- 引入国际化 -->
+		<script type="text/javascript" src="../js/easyui/locale/easyui-lang-zh_CN.js"></script>
+		<!-- 引入图标 -->
+		<link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css" />
+		<!-- 引入ztree的js-->
+		<script type="text/javascript" src="../js/ztree/jquery.ztree.all-3.5.js"></script>
+		<!-- 引入ztree的css -->
+		<link type="text/css" rel="stylesheet" href="../js/ztree/zTreeStyle.css"/>
+		<script type="text/javascript">
+			// 1.页面加载后执行
+			$(function(){
+				// 1.进行ztree菜单设置
+				var setting = {
+					data : {
+						simpleData : {
+							// 支持简单json数据格式
+							enable : true,
+						}
+					}
+				};
+				
+				// 2. 制作属性菜单
+				var zTreeNodes = [
+					{id : 1, pId : 0, name : "父节点一"},
+					{id : 11, pId : 1, name : "子节点一", url : "https://www.baidu.com"},
+					{id : 12, pId : 1, name : "子节点二"},
+					{id : 2, pId : 0, name : "父节点二"},
+					{id : 21, pId : 2, name : "子节点三"},
+					{id : 22, pId : 2, name : "子节点四"},
+				];
+				
+				// 3.将树形菜单加入到基本功能下
+				$.fn.zTree.init($("#baseMenu"),setting,zTreeNodes);
+			});
+		</script>
+	</head>
+
+	<body class="easyui-layout">
+		<div data-options="region:'north',title:'导航菜单'" style="height:100px;"></div>
+		<div data-options="region:'south',title:'South Title'" style="height:100px;"></div>
+		<div data-options="region:'east',title:'East'" style="width:100px;"></div>
+		<div data-options="region:'west',title:'导航菜单'" style="width:150px;">
+			<!-- 折叠面板 -->
+			<div class="easyui-accordion" data-options="fit:true">
+				<div data-options="title:'基本功能'">
+					<!-- 通过ztree插件，制作树形菜单  -->
+					<ul id="baseMenu" class="ztree"></ul>
+				</div>
+				<div data-options="title:'系统功能'"></div>
+			</div>
+		</div>
+		<div data-options="region:'center',title:'center title'" >
+			<!-- 选项卡面板  -->
+			<div id="mytabs" class="easyui-tabs" data-options="fit:true">
+				<div data-options="title:'选项卡一',closable:true">选项卡一</div>
+				<div data-options="title:'选项卡二',closable:true">选项卡二</div>
+			</div>
+			
+		</div>
+	</body>
+
+</html>

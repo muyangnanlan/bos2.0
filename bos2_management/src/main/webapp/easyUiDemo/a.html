@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<!-- 引入jqery核心类库 -->
+		<script type="text/javascript" src="../js/jquery-1.8.3.js"></script>
+		<!-- 引入easyui的核心类库 -->
+		<script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+		<!-- 引入默认主题 -->
+		<link rel="stylesheet" type="text/css" href="../js/easyui/themes/default/easyui.css" />
+		<!-- 引入国际化 -->
+		<script type="text/javascript" src="../js/easyui/locale/easyui-lang-zh_CN.js"></script>
+		<!-- 引入图标 -->
+		<link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css" />
+		<script type="text/javascript">
+			$(function(){
+				$("#templink").click(function(){
+					// 添加一个新的选项卡
+					$("#mytabs").tabs('add',{
+						title:'传智播客',
+						content:'Tab Body',
+						closable:true
+					});
+				});
+			});
+		</script>
+	</head>
+
+	<body class="easyui-layout">
+		<div data-options="region:'north',title:'导航菜单'" style="height:100px;"></div>
+		<div data-options="region:'south',title:'South Title'" style="height:100px;"></div>
+		<div data-options="region:'east',title:'East'" style="width:100px;"></div>
+		<div data-options="region:'west',title:'导航菜单'" style="width:150px;">
+			<!-- 折叠面板 -->
+			<div class="easyui-accordion" data-options="fit:true">
+				<div data-options="title:'基本功能'">
+					<a href="javascript:void(0)" id="templink">传智播客</a>
+				</div>
+				<div data-options="title:'系统功能'"></div>
+			</div>
+		</div>
+		<div data-options="region:'center',title:'center title'" >
+			<!-- 选项卡面板  -->
+			<div id="mytabs" class="easyui-tabs" data-options="fit:true">
+				<div data-options="title:'选项卡一',closable:true">选项卡一</div>
+				<div data-options="title:'选项卡二'">选项卡二</div>
+			</div>
+			
+		</div>
+	</body>
+
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>路由</title>
+		<!-- 引入anglurjs核心类库 -->
+		<script type="text/javascript" src="../js/angular.min.js"></script>
+		<!-- 引入路由的js -->
+		<script type="text/javascript" src="../js/angular-route.min.js"></script>
+	</head>
+	<!-- ng-app市angularjs程序的入口 -->
+	<body ng-app="myapp">
+		<div >
+			<h2>head</h2>
+			<a href="#/jaee">jaee</a>
+			<a href="#/iso">iso</a>
+			<a href="#/ppt">ppt</a>
+		</div>
+		<!-- 路由加载后更新加载的内容 -->
+		<div ng-view></div>
+		<div>footer</div>
+		<script type="text/javascript">
+			// 初始化app模块
+			var myapp = angular.module("myapp", ["ngRoute"]);
+			
+			// 给myappn配置gRoute
+			myapp.config(["$routeProvider", function($routeProvider){
+				$routeProvider
+					.when("/jaee", {
+						templateUrl : "4_1.html"
+					}).when("/iso", {
+						templateUrl : "4_2.html"
+					}).when("/ppt", {
+						templateUrl : "4_3.html"
+					}).otherwise({
+						redirect : "/jaee"
+					})
+			}]);
+		</script>
+	</body>
+</html>
+
